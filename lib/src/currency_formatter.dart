@@ -8,22 +8,20 @@ class CurrencyFormatter extends TextInputFormatter {
     this.locale,
     this.name,
     this.symbol,
-    this.turnOffGrouping = false,
+    this.isGrouped = false,
   });
 
   final String locale;
   final String name;
   final String symbol;
-  final bool turnOffGrouping;
+  final bool isGrouped;
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    final isInsertedCharacter =
-        oldValue.text.length + 1 == newValue.text.length && newValue.text.startsWith(oldValue.text);
-    final isRemovedCharacter =
-        oldValue.text.length - 1 == newValue.text.length && oldValue.text.startsWith(newValue.text);
+    final isInserted = oldValue.text.length + 1 == newValue.text.length && newValue.text.startsWith(oldValue.text);
+    final isRemoved = oldValue.text.length - 1 == newValue.text.length && oldValue.text.startsWith(newValue.text);
 
-    if (!isInsertedCharacter && !isRemovedCharacter) {
+    if (!isInserted && !isRemoved) {
       return oldValue;
     }
 
@@ -32,26 +30,28 @@ class CurrencyFormatter extends TextInputFormatter {
       name: name,
       symbol: symbol,
     );
-    if (turnOffGrouping) {
+
+    if (isGrouped) {
       format.turnOffGrouping();
     }
-    final isNegative = newValue.text.startsWith('-');
+
+    final isNegativeValue = newValue.text.startsWith('-');
     var newText = newValue.text.replaceAll(RegExp('[^0-9]'), '');
 
-    if (isRemovedCharacter && !_lastCharacterIsDigit(oldValue.text)) {
+    if (isRemoved && !_lastCharacterIsDigit(oldValue.text)) {
       final length = newText.length - 1;
       newText = newText.substring(0, length > 0 ? length : 0);
     }
 
     if (newText.trim() == '') {
       return newValue.copyWith(
-        text: isNegative ? '-' : '',
-        selection: TextSelection.collapsed(offset: isNegative ? 1 : 0),
+        text: isNegativeValue ? '-' : '',
+        selection: TextSelection.collapsed(offset: isNegativeValue ? 1 : 0),
       );
     } else if (newText == '00' || newText == '000') {
       return TextEditingValue(
-        text: isNegative ? '-' : '',
-        selection: TextSelection.collapsed(offset: isNegative ? 1 : 0),
+        text: isNegativeValue ? '-' : '',
+        selection: TextSelection.collapsed(offset: isNegativeValue ? 1 : 0),
       );
     }
 
@@ -59,7 +59,8 @@ class CurrencyFormatter extends TextInputFormatter {
     if (format.decimalDigits > 0) {
       newInt /= pow(10, format.decimalDigits);
     }
-    final newString = (isNegative ? '-' : '') + format.format(newInt).trim();
+
+    final newString = (isNegativeValue ? '-' : '') + format.format(newInt).trim();
     return TextEditingValue(
       text: newString,
       selection: TextSelection.collapsed(offset: newString.length),
