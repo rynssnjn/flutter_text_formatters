@@ -11,9 +11,9 @@ class CurrencyFormatter extends TextInputFormatter {
     this.isGrouped = false,
   });
 
-  final String locale;
-  final String name;
-  final String symbol;
+  final String? locale;
+  final String? name;
+  final String? symbol;
   final bool isGrouped;
 
   @override
@@ -56,8 +56,8 @@ class CurrencyFormatter extends TextInputFormatter {
     }
 
     num newInt = int.parse(newText);
-    if (format.decimalDigits > 0) {
-      newInt /= pow(10, format.decimalDigits);
+    if (format.decimalDigits! > 0) {
+      newInt /= pow(10, format.decimalDigits!);
     }
 
     final newString = (isNegativeValue ? '-' : '') + format.format(newInt).trim();

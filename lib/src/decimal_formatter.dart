@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 class DecimalFormatter extends TextInputFormatter {
   DecimalFormatter({this.decimalRange}) : assert(decimalRange == null || decimalRange > 0);
 
-  final int decimalRange;
+  final int? decimalRange;
 
   @override
   TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
@@ -17,8 +17,8 @@ class DecimalFormatter extends TextInputFormatter {
     if (decimalRange != null) {
       final value = newValue.text;
 
-      if ((value.contains('.') && value.substring(value.indexOf('.') + 1).length > decimalRange) ||
-          (value.contains(',') && value.substring(value.indexOf(',') + 1).length > decimalRange)) {
+      if ((value.contains('.') && value.substring(value.indexOf('.') + 1).length > decimalRange!) ||
+          (value.contains(',') && value.substring(value.indexOf(',') + 1).length > decimalRange!)) {
         truncated = oldValue.text;
         newSelection = oldValue.selection;
       } else if (value == '.') {
